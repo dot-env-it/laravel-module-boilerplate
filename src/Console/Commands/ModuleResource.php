@@ -8,16 +8,17 @@ use Symfony\Component\Console\Input\InputOption;
 class ModuleResource extends BaseModuleGenerator
 {
     protected $name = 'module:resource';
+
     protected $type = 'Resource';
 
     protected function getDefaultNamespace($rootNamespace): string
     {
-        return $rootNamespace . DIRECTORY_SEPARATOR .
-            'Modules' . DIRECTORY_SEPARATOR .
-            Str::title($this->option('module')) . DIRECTORY_SEPARATOR .
-            'Http' . DIRECTORY_SEPARATOR .
-            Str::plural($this->type) . DIRECTORY_SEPARATOR .
-            'v1';
+        return $rootNamespace . DIRECTORY_SEPARATOR
+            . 'Modules' . DIRECTORY_SEPARATOR
+            . Str::title($this->option('module')) . DIRECTORY_SEPARATOR
+            . 'Http' . DIRECTORY_SEPARATOR
+            . Str::plural($this->type) . DIRECTORY_SEPARATOR
+            . 'v1';
     }
 
     protected function getStub(): string

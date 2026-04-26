@@ -5,48 +5,49 @@ namespace DotEnvIt\ModuleBoilerplate\Console\Commands;
 use App\Enums\Role;
 use Composer\InstalledVersions;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class MakeModule extends Command
 {
     protected $signature = 'make:module {name} {--roles=*} {--module=} {--model=} {--js-path=resources/assets/extended/js/custom : Custom destination for JS files}';
+
     protected $description = 'Generate a full module structure';
 
     public function handle(): void
     {
-
         // Prevent execution in production even if called via artisan
         if (app()->isProduction()) {
             $this->error('This generator is strictly for local development!');
+
             return 1;
         }
-        
-        $name = $this->argument('name');
-        $module = $this->option('module') ?? $name;
-        $model = $this->option('model') ?? $name;
 
-        $params = ['--module' => $module, '--sub' => $name];
-        $actions = ['Index', 'Show', 'Store', 'Update', 'Destroy'];
+        $name   = $this->argument('name');
+        $module = $this->option('module') ?? $name;
+        $model  = $this->option('model')  ?? $name;
+
+        $params        = ['--module' => $module, '--sub' => $name];
+        $actions       = ['Index', 'Show', 'Store', 'Update', 'Destroy'];
         $migrationPath = "database/migrations/{$module}";
 
         // 1. Standard Laravel Components
         $this->call('module:model', ['name' => $model] + $params);
 
         // Ensure the sub directory exists (required by the make:migration command)
-        if (!is_dir(base_path($migrationPath))) {
-            mkdir(base_path($migrationPath), 0755, true);
+        if (! is_dir(base_path($migrationPath))) {
+            mkdir(base_path($migrationPath), 0o755, true);
         }
 
         // Call the migration generator with the custom path
         $this->call('make:migration', [
-            'name' => "create_" . Str::of($name)->plural()->snake()->lower()->toString()
-                . "_table",
+            'name' => 'create_' . Str::of($name)->plural()->snake()->lower()->toString()
+                . '_table',
             '--path' => $migrationPath,
         ]);
 
         $this->call('make:factory', [
-            'name' => "{$name}Factory",
+            'name'    => "{$name}Factory",
             '--model' => "App\\Modules\\{$module}\\Models\\v1\\{$model}",
         ]);
         $this->call('make:seeder', ['name' => "{$name}Seeder"]);
@@ -56,26 +57,25 @@ class MakeModule extends Command
             // Create the Action class (e.g., app/Modules/User/Actions/StoreUserAction.php)
             if (in_array($action, ['Store', 'Update', 'Destroy'])) {
                 $this->call('module:action', [
-                    'name' => "{$action}{$name}Action",
+                    'name'     => "{$action}{$name}Action",
                     '--module' => $module,
-                    '--model' => $model,
+                    '--model'  => $model,
                     '--action' => $action,
                 ]);
 
                 // Create Request for each action
                 $this->call('module:request', [
-                    'name' => "{$action}{$name}Request",
+                    'name'     => "{$action}{$name}Request",
                     '--module' => $module,
-                    '--model' => $model,
+                    '--model'  => $model,
                 ]);
             }
 
-
             // Create Invokable Controller for each action
             $this->call('module:controller', [
-                'name' => "{$action}{$name}Controller",
+                'name'     => "{$action}{$name}Controller",
                 '--module' => $module,
-                '--model' => $model,
+                '--model'  => $model,
                 '--action' => $action,
             ]);
         }
@@ -93,7 +93,7 @@ class MakeModule extends Command
         $this->makeViews($name);
         $this->makeJs($name);
         $this->appendRoutes($name, $module);
-        
+
         if ($this->hasPermissionPlugin()) {
             $this->createPermissions($name);
         }
@@ -115,34 +115,36 @@ class MakeModule extends Command
         // resources/assets/extended/js/custom/modules/company
         $targetJsDir = base_path("{$jsPath}{$sep}modules{$sep}" . $name);
 
-        if (!is_dir($targetJsDir)) {
-            mkdir($targetJsDir, 0755, true);
+        if (! is_dir($targetJsDir)) {
+            mkdir($targetJsDir, 0o755, true);
         }
 
         foreach (glob("{$stubViewDir}/**/*.stub") as $stubFile) {
             // 1. Get the relative path from the stub root (e.g., "list/_action-menu.stub")
-            $relativePath = trim(explode('_module', $stubFile)[1], "\\/");
+            $relativePath = trim(explode('_module', $stubFile)[1], '\\/');
 
             // 2. Determine the target filename with the correct extension
             $targetRelativePath = str_replace('.stub', '.js', $relativePath);
-            $targetFile = $targetJsDir . DIRECTORY_SEPARATOR . $targetRelativePath;
+            $targetFile         = $targetJsDir . DIRECTORY_SEPARATOR . $targetRelativePath;
 
             // 3. Ensure the nested target directory exists
             $targetSubDir = dirname($targetFile);
-            if (!is_dir($targetSubDir)) {
-                mkdir($targetSubDir, 0755, true);
+
+            if (! is_dir($targetSubDir)) {
+                mkdir($targetSubDir, 0o755, true);
             }
 
             if (file_exists($targetFile)) {
                 $this->warn("Javascript file already exists: {$targetFile}. Skipping.");
+
                 continue;
             }
 
             // replace placeholders in the stub file
             $stubContent = file_get_contents($stubFile);
             $stubContent = str_replace(
-                ['{{ sub }}', '{{ module_lower }}', '{{ module_plural }}',],
-                [Str::headline($name), $name, Str::plural($name),],
+                ['{{ sub }}', '{{ module_lower }}', '{{ module_plural }}'],
+                [Str::headline($name), $name, Str::plural($name)],
                 $stubContent
             );
 
@@ -159,29 +161,31 @@ class MakeModule extends Command
         $sep = DIRECTORY_SEPARATOR;
 
         // Copy the view stub to the appropriate location
-        $stubViewDir = $this->getStubPath("views{$sep}_module");
+        $stubViewDir   = $this->getStubPath("views{$sep}_module");
         $targetViewDir = base_path("resources{$sep}views{$sep}modules{$sep}" . $name);
 
-        if (!is_dir($targetViewDir)) {
-            mkdir($targetViewDir, 0755, true);
+        if (! is_dir($targetViewDir)) {
+            mkdir($targetViewDir, 0o755, true);
         }
 
         foreach (glob("{$stubViewDir}/**/*.stub") as $stubFile) {
             // 1. Get the relative path from the stub root (e.g., "list/_action-menu.stub")
-            $relativePath = trim(explode('_module', $stubFile)[1], "\\/");
+            $relativePath = trim(explode('_module', $stubFile)[1], '\\/');
 
             // 2. Determine the target filename with the correct extension
             $targetRelativePath = str_replace('.stub', '.blade.php', $relativePath);
-            $targetFile = $targetViewDir . DIRECTORY_SEPARATOR . $targetRelativePath;
+            $targetFile         = $targetViewDir . DIRECTORY_SEPARATOR . $targetRelativePath;
 
             // 3. Ensure the nested target directory exists
             $targetSubDir = dirname($targetFile);
-            if (!is_dir($targetSubDir)) {
-                mkdir($targetSubDir, 0755, true);
+
+            if (! is_dir($targetSubDir)) {
+                mkdir($targetSubDir, 0o755, true);
             }
 
             if (file_exists($targetFile)) {
                 $this->warn("View file already exists: {$targetFile}. Skipping.");
+
                 continue;
             }
 
@@ -201,6 +205,7 @@ class MakeModule extends Command
     {
         $routeFile = base_path('routes/modules.php');
         $routeStub = $this->getStubPath('routes.stub');
+
         if ($name !== $module) {
             $routeStub = $this->getStubPath('routes.module.stub');
         }
@@ -224,13 +229,15 @@ class MakeModule extends Command
                 )
             ) {
                 $this->warn("Routes for module '{$name}' already exist in {$routeFile}. Skipping route appending.");
+
                 return;
             }
 
             file_put_contents($routeFile, PHP_EOL . $stubContent, FILE_APPEND);
 
             $this->info("Routes for module '{$name}' appended to {$routeFile}");
-        } else {
+        }
+        else {
             $this->error("Route stub not found at {$routeStub}");
         }
     }
@@ -252,11 +259,11 @@ class MakeModule extends Command
 
             $roles = $this->option('roles');
             foreach ($roles as $role) {
-
                 if (\Spatie\Permission\Models\Role::where('name', $role)->exists()) {
                     $roleModel = \Spatie\Permission\Models\Role::findByName($role);
                     $roleModel->givePermissionTo($permission);
-                } else {
+                }
+                else {
                     $this->warn("Role '{$role}' does not exist. Skipping permission assignment for this role.");
                 }
             }
@@ -277,7 +284,6 @@ class MakeModule extends Command
 
         return $actions;
     }
-
 
     protected function getStubPath($stubName)
     {

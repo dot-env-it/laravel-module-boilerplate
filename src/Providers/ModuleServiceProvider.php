@@ -2,7 +2,6 @@
 
 namespace DotEnvIt\ModuleBoilerplate\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use DotEnvIt\ModuleBoilerplate\Console\Commands\MakeModule;
 use DotEnvIt\ModuleBoilerplate\Console\Commands\ModuleAction;
 use DotEnvIt\ModuleBoilerplate\Console\Commands\ModuleController;
@@ -21,6 +20,7 @@ use DotEnvIt\ModuleBoilerplate\Console\Commands\ModuleRequest;
 use DotEnvIt\ModuleBoilerplate\Console\Commands\ModuleResource;
 use DotEnvIt\ModuleBoilerplate\Console\Commands\ModuleService;
 use DotEnvIt\ModuleBoilerplate\Console\Commands\ModuleTest;
+use Illuminate\Support\ServiceProvider;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -55,19 +55,18 @@ class ModuleServiceProvider extends ServiceProvider
         if ($this->app->isProduction()) {
             return;
         }
-        
+
         if ($this->app->runningInConsole()) {
             $this->commands($this->commands);
 
             // Publishing stubs so they can be customized in the main app
             $this->publishes([
-                __DIR__.'/../stubs' => base_path('stubs/vendor/dot-env-it'),
+                __DIR__ . '/../stubs' => base_path('stubs/vendor/dot-env-it'),
             ], 'module-boilerplate-stubs');
         }
     }
 
     public function register()
     {
-        //
     }
 }
