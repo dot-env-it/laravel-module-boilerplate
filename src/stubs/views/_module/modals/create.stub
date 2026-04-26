@@ -1,0 +1,167 @@
+<!--begin::Modal - New {{ module }}-->
+<div class="modal fade" id="kt_modal_new_{{ module_lower }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <!--begin::Modal dialog-->
+    <div class="modal-dialog modal-dialog-centered mw-650px">
+        <!--begin::Modal content-->
+        <div class="modal-content rounded">
+            <!--begin::Modal header-->
+            <div class="modal-header pb-0 border-0 justify-content-end">
+            </div>
+            <!--begin::Modal header-->
+            <!--begin::Modal body-->
+            <div class="modal-body scroll-y px-10 px-lg-15 pt-0 pb-15">
+                <!--begin:Form-->
+                <form id="kt_modal_new_{{ module_lower }}_form" class="form"
+                action="{{ route('{{ module_lower }}.store', ['param' => '$param' ?? 'new-param']) }}" method="POST">
+                    <!--begin::Heading-->
+                    <div class="mb-13 text-center">
+                        <!--begin::Title-->
+                        <h1 class="mb-3">@lang('Create New {{ module }}')'</h1>
+                        <!--end::Title-->
+                        <!--begin::Description-- >
+                        <div class="text-muted fw-bold fs-5">If you need more info, please check
+                            <a href="#" class="fw-bolder link-primary">Project Guidelines</a>.
+                        </div>
+                        < !--end::Description-->
+                    </div>
+                    <!--end::Heading-->
+                    <!--begin::Input group-->
+                    <div class="d-flex flex-column mb-8 fv-row">
+                        <!--begin::Label-->
+                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                            <span class="required">@lang('{{ module }} Title')</span>
+                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
+                               title="@@lang('Specify a {{ module }} title for future usage and reference')"></i>
+                        </label>
+                        <!--end::Label-->
+                        <input type="text" class="form-control form-control-solid" placeholder="@lang('Enter {{ module }} Title')"
+                               name="{{ module_lower }}_title"/>
+                    </div>
+                    <!--end::Input group-->
+                    <!--begin::Input group-->
+                    <div class="row g-9 mb-8">
+                        <!--begin::Col-->
+                        <div class="col-md-6 fv-row">
+                            <label class="required fs-6 fw-bold mb-2">Assign</label>
+                            <select class="form-select form-select-solid" data-control="select2" data-hide-search="true"
+                                    data-placeholder="Select a Team Member" name="target_assign">
+                                <option value="">@lang('Select user...')</option>
+                                @forelse(users() as $user)
+                                    @continue(!$user->roles->count())
+                                    <option value="{{ $user->id }}"
+                                            data-kt-rich-content-subcontent="{{ $user->roles?->first()?->name }}"
+                                            data-kt-rich-content-icon='<div class="cursor-pointer symbol symbol-30px symbol-md-40px me-2 p-1">@include('partials.general._avatar', compact('user'))</div>'
+                                    >
+                                        {{ $user->name }}
+                                    </option>
+                                @empty
+                                    @lang('No User found!!!!')
+                                @endforelse
+                            </select>
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-md-6 fv-row">
+                            <label class="required fs-6 fw-bold mb-2">Due Date</label>
+                            <!--begin::Input-->
+                            <div class="position-relative d-flex align-items-center">
+                                <!--begin::Icon-->
+                               <div id="kt_flatpickr_wrapper" class="input-group">
+                                   <button class="btn btn-secondary btn-sm p-0 text-center" type="button">
+                                       {!! duoTune("calendar", 'general', "svg-icon-1 ms-3") !!}
+                                       <!--end::Icon-->
+                                   </button>
+                                   <input type="text" class="form-control form-control-solid ps-12 flatpickr"
+                                          placeholder="@lang('Select a date')" data-input
+                                          name="due_date"/>
+                                   <button class="btn btn-secondary btn-sm p-0" type="button" title="clear" data-clear>
+                                       {!! duoTune('cross', 'arrows')  !!}
+                                   </button>
+                               </div>
+                            </div>
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Input group-->
+                    <!--begin::Input group-->
+                    <div class="d-flex flex-column mb-8">
+                        <label class="fs-6 fw-bold mb-2">@lang('{{ module }} Description')</label>
+                        <div id="note_description"></div>
+                        <input type="hidden" name="description" />
+                    </div>
+                    <!--end::Input group-->
+                    <!--begin::Input group-->
+                    <div class="d-flex flex-stack mb-8">
+                        <!--begin::Label-->
+                        <div class="me-5">
+                            <label class="fs-6 fw-bold">@lang('Is this private note?')</label>
+                            <div
+                                class="fs-7 fw-bold text-muted">@lang('When enabled, Only administrator and assigned user can view / modify the note.')
+                            </div>
+                        </div>
+                        <!--end::Label-->
+                        <!--begin::Switch-->
+                        <label class="form-check form-switch form-check-custom form-check-solid">
+                            <input class="form-check-input" name="is_private" type="checkbox" value="1"/>
+                            <span class="form-check-label fw-bold text-muted">Enabled</span>
+                        </label>
+                        <!--end::Switch-->
+                    </div>
+                    <!--end::Input group-->
+                    <!--begin::Input group-->
+                    <div class="mb-15 fv-row">
+                        <!--begin::Wrapper-->
+                        <div class="d-flex flex-stack">
+                            <!--begin::Label-->
+                            <div class="fw-bold me-5">
+                                <label class="fs-6">Notifications</label>
+                                <div class="fs-7 text-muted">Allow Notifications by Phone or Email</div>
+                            </div>
+                            <!--end::Label-->
+                            <!--begin::Checkboxes-->
+                            <div class="d-flex align-items-center">
+                                <!--begin::Checkbox-->
+                                <label class="form-check form-check-custom form-check-solid me-10">
+                                    <input class="form-check-input h-20px w-20px" type="checkbox" name="communication[]"
+                                           value="email" checked="checked"/>
+                                    <span class="form-check-label fw-bold">Email</span>
+                                </label>
+                                <!--end::Checkbox-->
+                                <!--begin::Checkbox-->
+                                <label class="form-check form-check-custom form-check-solid">
+                                    <input class="form-check-input h-20px w-20px" type="checkbox" name="communication[]"
+                                           value="phone"/>
+                                    <span class="form-check-label fw-bold">Phone</span>
+                                </label>
+                                <!--end::Checkbox-->
+                            </div>
+                            <!--end::Checkboxes-->
+                        </div>
+                        <!--end::Wrapper-->
+                    </div>
+                    <!--end::Input group-->
+                    <!--begin::Actions-->
+                    <div class="text-center">
+                        <button type="reset" id="kt_modal_new_target_cancel" class="btn btn-light me-3">@lang('Cancel')</button>
+                        <button type="submit" id="kt_modal_new_target_submit" class="btn btn-primary">
+                            @include('partials.general._button-indicator', ['label' => __('Submit')])
+                        </button>
+                    </div>
+                    <!--end::Actions-->
+                </form>
+                <!--end:Form-->
+            </div>
+            <!--end::Modal body-->
+        </div>
+        <!--end::Modal content-->
+    </div>
+    <!--end::Modal dialog-->
+</div>
+<!--end::Modal - New {{ module }}-->
+
+@section('toolbar_actions')
+    <a href="#" class="btn btn-sm btn-primary fw-bolder" data-bs-toggle="modal" data-bs-target="#kt_modal_new_{{ module_lower }}" id="kt_toolbar_create_button">
+        @lang('Create {{ module }}')
+    </a>
+@endsection

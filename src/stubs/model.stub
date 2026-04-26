@@ -1,0 +1,46 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Core\Traits\SpatieLogsActivity;
+use Database\Factories\{{ class }}Factory;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+/**
+ * @property int $id
+ * @method static {{ class }}Factory factory($count = null, $state = [])
+ * @method static Builder<static>|User newModelQuery()
+ * @method static Builder<static>|User newQuery()
+ * @method static Builder<static>|User query()
+ * @method static Builder<static>|User whereCreatedAt($value)
+ * @method static Builder<static>|User whereDeletedAt($value)
+ * @method static Builder<static>|User whereId($value)
+ * @method static Builder<static>|User whereUpdatedAt($value)
+ * @mixin Eloquent
+ * @mixin IdeHelperUser
+ */
+final class {{ class }} extends Model
+{
+    use HasFactory;
+    use HasUlids;
+    use SoftDeletes;
+    use SpatieLogsActivity;
+
+    protected $fillable = [
+        //
+    ];
+
+
+    protected $casts = [
+        // 'field_date' => 'date'
+    ];
+
+    public static function newFactory(): {{ class }}Factory|Factory
+    {
+        return {{ class }}Factory::new();
+    }
+}

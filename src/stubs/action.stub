@@ -1,0 +1,25 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Modules\{{ module }}\Http\Payloads\v1\{{ model }}Payload;
+use App\Modules\{{ module }}\Models\v1\{{ model }};
+use Illuminate\Database\DatabaseManager;
+use Throwable;
+
+class {{ class }}
+{
+    public function __construct(
+        protected DatabaseManager $database
+    ) {}
+
+    /**
+     * Execute the business logic for the {{ action }} {{ model }} within a transaction.
+     *
+     * @throws Throwable
+     */
+    public function execute({{ model }}Payload $payload, {{ model }} ${{ model_lower }} = null): mixed
+    {
+        return $this->database->transaction(fn () => /* {{ model }}::create($payload->toArray()) */ );
+    }
+}

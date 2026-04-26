@@ -1,0 +1,26 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Http\Controllers\Controller;
+use App\Modules\{{ module }}\DataTables\v1\{{ model }}DataTable;
+use JustSteveKing\Tools\Http\Enums\Status;
+use Throwable;
+
+class {{ class }} extends Controller
+{
+    public function __construct(
+    ) {}
+
+    /**
+     * @throws Throwable
+     */
+    public function __invoke(
+        {{ model }}DataTable ${{ model_lower }}DataTable,
+    ): mixed {
+        abort_unless(can('view {{ model_lower }}'), Status::FORBIDDEN->value);
+
+        return ${{ model_lower }}DataTable->render('modules.{{ model_lower }}.list.index');
+
+    }
+}

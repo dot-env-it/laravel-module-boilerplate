@@ -1,0 +1,35 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Foundation\Http\FormRequest;
+use App\Modules\{{ module }}\Http\Payloads\v1\{{ model }}Payload;
+
+class {{ class }} extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     */
+    public function rules(): array
+    {
+        return [
+            // Add validation rules for {{ model }}
+        ];
+    }
+
+    /**
+     * Transform the request into a Payload DTO.
+     */
+    public function payload(): {{ model }}Payload
+    {
+        return {{ model }}Payload::fromRequest($this);
+    }
+}

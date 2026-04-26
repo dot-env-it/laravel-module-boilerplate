@@ -1,0 +1,20 @@
+<x-base-layout>
+
+    <!--begin::Card-->
+    <div class="card">
+        @include('partials.search._datatable', [
+            'placeholder' => 'Search {{ module_plural }}...',
+            'id' => '{{ module_plural }}SearchInput',
+            'tableName' => '{{ module_lower }}-table'
+        ])
+
+        <!--begin::Card body-->
+        <div class="card-body pt-6">
+            @include('modules.{{ module_lower }}.list._table')
+        </div>
+        <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+
+    @include('modules.{{ module_lower }}.modals.create')
+</x-base-layout>

@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use App\Filters\DateBetweenFilter;
+use App\Filters\DateFilter;
+use App\Modules\{{ module }}\Models\v1\{{ sub }};
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
+
+final readonly class {{ class }}
+{
+    public function handle(): QueryBuilder
+    {
+        // Query logic for {{ class }}
+        return QueryBuilder::for({{ sub }}::query())
+        ->allowedFilters(
+            AllowedFilter::beginsWith('name'),
+            AllowedFilter::endsWith('name'),
+            AllowedFilter::exact('status'),
+            AllowedFilter::custom('created_at', new DateFilter()),
+            AllowedFilter::custom('created_between', new DateBetweenFilter('created_at')),
+        )
+        ->allowedSorts(
+            'created_at',
+        )
+        ->defaultSort('-created_at');
+    }
+}

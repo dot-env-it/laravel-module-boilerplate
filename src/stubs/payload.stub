@@ -1,0 +1,38 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Http\Request;
+
+final readonly class {{ class }}
+{
+    public function __construct(
+        public array $data,
+    ) {}
+
+
+    public static function fromArray(array $data): {{ sub }}Payload
+    {
+        return new self(
+            data: $data['data'],
+        );
+    }
+
+    /**
+     * Create a new payload instance from the request.
+     */
+    public static function fromRequest(Request $request): self
+    {
+        return self::fromArray($request->validated());
+    }
+
+    /**
+     * Convert the payload to an array.
+     */
+    public function toArray(): array
+    {
+        return [
+            'data' => $this->data
+        ];
+    }
+}

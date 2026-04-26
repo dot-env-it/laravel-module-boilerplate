@@ -1,0 +1,31 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Http\Controllers\Controller;
+use App\Http\Responses\V1\ModelResponse;
+use App\Modules\{{ module }}\Http\Resources\v1\{{ model }}Resource;
+use App\Modules\{{ module }}\Models\v1\{{ model }};
+use JustSteveKing\Tools\Http\Enums\Status;
+use Throwable;
+
+class {{ class }} extends Controller
+{
+    public function __construct(
+    ) {}
+
+    /**
+     * @throws Throwable
+     */
+    public function __invoke(
+        {{ model }} ${{ model_lower }},
+    ): ModelResponse {
+        abort_unless(can('view {{ model_lower }}'), Status::FORBIDDEN->value);
+
+        return new ModelResponse(
+            new {{ model }}Resource(${{ model_lower }}),
+            Status::OK
+        );
+
+    }
+}

@@ -1,0 +1,8 @@
+// {{ module }} {{ name }} pages
+
+Route::get('{{ module_lower }}/{{{ module_lower }}}/{{ name_plural }}', \App\Modules\{{ module }}\Http\Controllers\v1\Index{{ name }}Controller::class)->name('{{ name_plural }}.index');
+Route::get('api/v1/{{ module_lower }}/{{{ module_lower }}}/{{ name_plural }}', \App\Modules\{{ module }}\Http\Controllers\Api\v1\Index{{ name }}Controller::class)->name('{{ name_plural }}.api.index');
+Route::post('api/v1/{{ module_lower }}/{{{ module_lower }}}/{{ name_plural }}/store', \App\Modules\{{ module }}\Http\Controllers\Api\v1\Store{{ name }}Controller::class)->name('{{ name_plural }}.store');
+Route::get('api/v1/{{ name_plural }}/{{{ name_lower }}}/show', \App\Modules\{{ module }}\Http\Controllers\Api\v1\Show{{ name }}Controller::class)->name('{{ name_plural }}.show');
+Route::put('api/v1/{{ name_plural }}/{{{ name_lower }}}/update', \App\Modules\{{ module }}\Http\Controllers\Api\v1\Update{{ name }}Controller::class)->name('{{ name_plural }}.update');
+Route::delete('api/v1/{{ name_plural }}/{{{ name_lower }}}/destroy', \App\Modules\{{ module }}\Http\Controllers\Api\v1\Destroy{{ name }}Controller::class)->name('{{ name_plural }}.destroy');

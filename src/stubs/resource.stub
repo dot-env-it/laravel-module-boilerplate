@@ -1,0 +1,45 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\JsonApi\JsonApiResource;
+
+
+/**
+ * @property mixed $id
+ * @property mixed $updated_at
+ * @property mixed $created_at
+ */
+ class {{ class }} extends JsonApiResource
+{
+
+    /**
+     * Transform the resource into an array.
+     */
+    public function toAttributes(Request $request): array
+    {
+        return [
+                'id'   => (string) $this->id,
+                'created_at' => $this->created_at,
+                'updated_at' => $this->updated_at,
+                // Add {{ sub }} attributes here
+        ];
+    }
+
+    public function toRelationships(Request $request): array
+    {
+        return [
+            // Define relationships here, e.g.:
+            // 'relation' => new RelationCollection($this->whenLoaded('relation')),
+        ];
+    }
+
+    public function toLinks(Request $request): array
+    {
+        return [
+            'show' => route('{{ sub_plural }}.show', ['{{ sub_lower }}' => $this->id]),
+        ];
+    }
+
+}

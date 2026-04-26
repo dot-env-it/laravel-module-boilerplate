@@ -1,0 +1,44 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Models\User;
+use App\Modules\{{ module }}\Models\v1\{{ model }};
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class {{ class }}
+{
+    use HandlesAuthorization;
+
+    /**
+     * Determine if the user can view the {{ model_lower }} (Readability).
+     */
+    public function view(User $user, {{ model }} ${{ model_lower }}): bool
+    {
+        return $user->id === ${{ model_lower }}->user_id;
+    }
+
+    /**
+     * Determine if the user can update the {{ model_lower }} (Writability).
+     */
+    public function update(User $user, {{ model }} ${{ model_lower }}): bool
+    {
+        return $user->id === ${{ model_lower }}->user_id;
+    }
+
+    /**
+     * Determine if the user can change the status of the {{ model_lower }}.
+     */
+    public function changeStatus(User $user, {{ model }} ${{ model_lower }}): bool
+    {
+        return $user->id === ${{ model_lower }}->user_id;
+    }
+
+    /**
+     * Determine if the user can delete the {{ model_lower }}.
+     */
+    public function delete(User $user, {{ model }} ${{ model_lower }}): bool
+    {
+        return $user->id === ${{ model_lower }}->user_id;
+    }
+}

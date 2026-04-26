@@ -1,0 +1,190 @@
+"use strict";
+
+// Class definition
+let KTModalNew{{ module }} = function () {
+    let submitButton;
+    let cancelButton;
+    let editButton;
+    let validator;
+    let form;
+    let modal;
+    let modalEl;
+    let table;
+
+    // Init form inputs
+    let initForm = function () {
+    }
+
+    // Handle form validation and submission
+    let handleForm = function () {
+        // Stepper custom navigation
+
+        // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
+        validator = FormValidation.formValidation(
+            form,
+            {
+                fields: {
+                    name: {
+                        validators: {
+                            notEmpty: {
+                                message: __('{{ sub }} name is required')
+                            }
+                        }
+                    },
+                    email: {
+                        validators: {
+                            notEmpty: {
+                                message: __('Email is required')
+                            },
+                            emailAddress: {
+                                message: __('The value is not a valid email address')
+                            }
+                        }
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        // eleInvalidClass: '',
+                        // eleValidClass: ''
+                    })
+                }
+            }
+        );
+
+        /*
+        table.addEventListener('click', function (e) {
+
+            e.preventDefault();
+            // Detect if the edit button was clicked
+            const editButton = e.target.closest('.button-edit-{{ module_lower }}');
+
+            if (editButton) {
+                const action = $(editButton).data('action');
+                const submitAction = $(editButton).data('submit-action');
+                const currentFormAction = form.getAttribute('action');
+
+                form.setAttribute('action', submitAction);
+                form.setAttribute('method', 'put');
+                form.setAttribute('data-existing-action', currentFormAction);
+
+                axios.get(action).then(function (response) {
+                    const {{ module_lower }} = response.data.data.attributes;
+                    form.querySelector('[name="name"]').value = {{ module_lower }}.name;
+                    form.querySelector('[name="email"]').value = {{ module_lower }}.email;
+
+                    modal.show();
+                }).catch(function (error) {
+                    console.log(error);
+                    Alert({
+                        text: "Failed to fetch {{ module_lower }} details. Please try again.",
+                        icon: "error",
+                    });
+                });
+            }
+        });
+        */
+
+        // Action buttons
+        submitButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // Validate form before submit
+            if (validator) {
+                validator.validate().then(function (status) {
+
+                    if (status === 'Valid') {
+                        submitButton.loading();
+
+                        const method = form.getAttribute('method') || 'post';
+                        // Send ajax request
+                        axios[method](form.getAttribute('action'), new FormData(form))
+                            .then(function (response) {
+                                Alert({
+                                    text: "{{ sub }} details has been successfully submitted.",
+                                    icon: "success",
+                                    confirmButtonClass: "btn font-weight-bold btn-light-primary",
+                                    onConfirm: () => {
+                                        if (form.hasAttribute('data-existing-action')) {
+                                            form.setAttribute('action', form.getAttribute('data-existing-action'));
+                                            form.setAttribute('method', 'post');
+                                        }
+
+                                        // Hide modal
+                                        modal.hide();
+                                        form.reset(); // Reset form
+                                    }
+                                });
+                            })
+                            .catch(function (error) {
+                                errorAlert(error);
+                            })
+                            .then(function () {
+                                // Hide loading indication
+                                submitButton.loaded();
+                            });
+                    } else {
+                        validationAlert();
+                    }
+                });
+            }
+        });
+
+        cancelButton.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            Confirm({
+                text: "Are you sure you would like to cancel?",
+                icon: "warning",
+                onConfirm: () => {
+                    if (form.hasAttribute('data-existing-action')) {
+                        form.setAttribute('action', form.getAttribute('data-existing-action'));
+                        form.setAttribute('method', 'post');
+                    }
+                    form.reset(); // Reset form
+                    modal.hide(); // Hide modal
+                },
+                 onCancel: () => {
+                    Alert({
+                        text: "Your form has not been cancelled!.",
+                        icon: "error",
+                    });
+                }
+            });
+        });
+    }
+
+    return {
+        // Public functions
+        init: function () {
+            table = document.querySelector('#{{ module_lower }}-table');
+
+            // Elements
+            modalEl = document.querySelector('#kt_modal_new_{{ module_lower }}');
+
+            if (!modalEl) {
+                Alert({
+                    text: "Modal not found!.", // todo: remove this line from live
+                    icon: "error",
+                });
+                return;
+            }
+
+            modal = new bootstrap.Modal(modalEl);
+
+            form = document.querySelector('#kt_modal_new_{{ module_lower }}_form');
+            editButton = document.querySelector('.button-edit-{{ module_lower }}');
+            submitButton = document.getElementById('kt_modal_new_{{ module_lower }}_submit');
+            cancelButton = document.getElementById('kt_modal_new_{{ module_lower }}_cancel');
+
+            initForm();
+            handleForm();
+        }
+    };
+}();
+
+// On document ready
+KTUtil.onDOMContentLoaded(function () {
+    KTModalNew{{ module }}.init();
+});

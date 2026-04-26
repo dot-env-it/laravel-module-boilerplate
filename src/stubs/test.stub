@@ -1,0 +1,189 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Modules\{{ module }}\Http\Controllers\Api\v1\Destroy{{ sub }}Controller;
+use App\Modules\{{ module }}\Http\Controllers\v1\Index{{ sub }}Controller;
+use App\Modules\{{ module }}\Http\Controllers\Api\v1\Show{{ sub }}Controller;
+use App\Modules\{{ module }}\Http\Controllers\Api\v1\Store{{ sub }}Controller;
+use App\Modules\{{ module }}\Http\Controllers\Api\v1\Update{{ sub }}Controller;
+use App\Modules\{{ module }}\Models\v1\{{ sub }};
+use JustSteveKing\Tools\Http\Enums\Status;
+
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertDatabaseMissing;
+use function Pest\Laravel\deleteJson;
+use function Pest\Laravel\getJson;
+use function Pest\Laravel\postJson;
+use function Pest\Laravel\putJson;
+
+dataset('routes', [
+    ['route' => '{{ module_plural }}.store'],
+    ['route' => '{{ module_plural }}.update', 'method' => 'Pest\Laravel\putJson', 'parameters' => ['{{ module_lower }}' => 1]],
+    ['route' => '{{ module_plural }}.destroy', 'method' => 'Pest\Laravel\deleteJson', 'parameters' => ['{{ module_lower }}' => 1]],
+    ['route' => '{{ module_plural }}.index', 'method' => 'Pest\Laravel\getJson'],
+    ['route' => '{{ module_plural }}.show', 'method' => 'Pest\Laravel\getJson', 'parameters' => ['{{ module_lower }}' => 1]],
+]);
+
+it('will prevent unauthorized access', closure: function ($route, $method = 'Pest\Laravel\postJson', $parameters = []): void {
+    signInAsDummyUser();
+
+    $data = {{ sub }}::factory()->create();
+
+    if (!blank($parameters)) {
+        $parameters['{{ module_lower }}'] = $data->id;
+    }
+
+    $method(
+        uri: route($route, $parameters),
+    )->assertStatus(
+        status: Status::FORBIDDEN->value
+    );
+
+})->with('routes')->group('{{ sub }}');
+
+it('will return the correct response if validation fails', closure: function (): void {
+    signInAsAdmin();
+
+    postJson(
+        uri : action(Store{{ sub }}Controller::class),
+        data: [],
+    )->assertStatus(
+        status: Status::UNPROCESSABLE_CONTENT->value
+    )->assertJsonValidationErrorFor(
+        key: 'name',
+    );
+})->group('{{ sub }}');
+
+it('will create a new {{ sub }} if validation passes', closure: function (): void {
+    signInAsAdmin();
+
+    $count = {{ sub }}::query()->count();
+
+    $data = {{ sub }}::factory()->make()->toArray();
+
+    $response = postJson(
+        uri : action(Store{{ sub }}Controller::class),
+        data: $data,
+    );
+
+    $response->assertStatus(
+        status: Status::CREATED->value
+    )->assertJsonStructure([
+       'data' => [
+           'id',
+           'type',
+            'attributes' => collect((new {{ sub }}())->getFillable())->diff(['status'])->values()->all(),
+        ],
+    ]);
+
+    expect(
+        {{ sub }}::query()->count(),
+    )->toEqual($count + 1);
+})->group('{{ sub }}');
+
+it('will return the correct response if validation fails for update', closure: function (): void {
+    signInAsAdmin();
+
+    ${{ module_lower }} = {{ sub }}::factory()->create();
+
+    putJson(
+        uri : action(Update{{ sub }}Controller::class, ['{{ module_lower }}' => ${{ module_lower }}->id]),
+        data: [],
+    )->assertStatus(
+        status: Status::UNPROCESSABLE_CONTENT->value
+    )->assertJsonValidationErrorFor(
+        key: 'name',
+    );
+})->group('{{ sub }}');
+
+it('it can update record', closure: function (): void {
+    signInAsAdmin();
+
+    ${{ module_lower }} = {{ sub }}::factory()->create();
+
+    $data = {{ sub }}::factory()->make()->toArray();
+
+    $response = putJson(
+        uri : action(Update{{ sub }}Controller::class, ['{{ module_lower }}' => ${{ module_lower }}->id]),
+        data: $data,
+    );
+
+    $response->assertStatus(
+        status: Status::ACCEPTED->value
+    )->assertJsonStructure([
+        'data' => [
+            'id',
+            'type',
+            'attributes' => collect((new {{ sub }}())->getFillable())->diff(['status'])->values()->all(),
+         ],
+    ]);
+
+    assertDatabaseHas(
+        table: {{ sub }}::class,
+        data : $data,
+    );
+})->group('{{ sub }}');
+
+it('can be deleted', closure: function (): void {
+    signInAsAdmin();
+
+    ${{ module_lower }} = {{ sub }}::factory()->create();
+
+    $response = deleteJson(
+        uri: action(Destroy{{ sub }}Controller::class, ['{{ module_lower }}' => ${{ module_lower }}->id]),
+    );
+
+    $response->assertStatus(
+        status: Status::NO_CONTENT->value
+    );
+
+    assertDatabaseMissing(
+        table: {{ sub }}::class,
+        data : [
+            'id' => ${{ module_lower }}->id,
+        ],
+    );
+})->group('{{ sub }}');
+
+it('can be retrieved', closure: function (): void {
+    signInAsAdmin();
+
+    ${{ module_lower }} = {{ sub }}::factory()->create();
+
+    $response = getJson(
+        uri: action(Show{{ sub }}Controller::class, ['{{ module_lower }}' => ${{ module_lower }}->id]),
+    );
+
+    $response->assertStatus(
+        status: Status::OK->value
+    )->assertJsonStructure([
+       'data' => [
+           'id',
+           'type',
+           'attributes' => collect((new {{ sub }}())->getFillable())->diff(['status'])->values()->all(),
+        ],
+    ]);
+
+})->group('{{ sub }}');
+
+it('can be listed', closure: function (): void {
+    signInAsAdmin();
+
+    ${{ module_lower }} = {{ sub }}::factory(10)->create();
+
+    $response = getJson(
+        uri: action(Index{{ sub }}Controller::class),
+    );
+
+    $response->assertStatus(
+        status: Status::OK->value
+    )->assertJsonStructure([
+        'data' => [
+            '*' => (new {{ sub }}())->getFillable(),
+        ],
+    ])->assertJsonCount(
+        count: 10,
+        key  : 'data',
+    );
+})->group('{{ sub }}');

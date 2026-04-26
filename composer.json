@@ -1,0 +1,33 @@
+{
+  "name": "dot-env-it/laravel-module-boilerplate",
+  "description": "A streamlined boilerplate generator for modular Laravel architectures.",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "DotEnvIt\\ModuleBoilerplate\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Dot-Env-IT",
+      "email": "dotenvit@gmail.com"
+    },
+    {
+      "name": "Jagdish Patel",
+      "email": "jagdish.j.ptl@gmail.com.com"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "^9.0|^10.0|^11.0|^12.0|^13.0"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "DotEnvIt\\ModuleBoilerplate\\Providers\\ModuleServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev"
+}

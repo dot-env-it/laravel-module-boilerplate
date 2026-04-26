@@ -1,0 +1,34 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Http\Controllers\Controller;
+use App\Http\Responses\V1\MessageResponse;
+use App\Modules\{{ module }}\Actions\v1\Destroy{{ model }}Action;
+use App\Modules\{{ module }}\Models\v1\{{ model }};
+use JustSteveKing\Tools\Http\Enums\Status;
+use Throwable;
+
+final class {{ class }} extends Controller
+{
+    public function __construct(
+        protected Destroy{{ model }}Action $action,
+    ) {}
+
+    /**
+     * @throws Throwable
+     */
+    public function __invoke(
+        {{ model }} ${{ model_lower }},
+    ): MessageResponse {
+        abort_unless(can('delete {{ model_lower }}'), Status::FORBIDDEN->value);
+
+        $this->action->execute(${{ model_lower }});
+
+        return new MessageResponse(
+            data: '{{ model }} deleted successfully.',
+            status: Status::NO_CONTENT
+        );
+
+    }
+}

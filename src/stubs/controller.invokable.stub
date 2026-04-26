@@ -1,0 +1,34 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Http\Controllers\Controller;
+use App\Http\Responses\V1\ModelResponse;
+use App\Modules\{{ module }}\Actions\v1\{{ action }}{{ model }}Action;
+use App\Modules\{{ module }}\Http\Requests\v1\{{ action }}{{ model }}Request;
+use App\Modules\{{ module }}\Http\Resources\v1\{{ model }}Resource;
+use JustSteveKing\Tools\Http\Enums\Status;
+use Throwable;
+
+class {{ class }} extends Controller
+{
+    public function __construct(
+        protected {{ action }}{{ model }}Action $action,
+    ) {}
+
+    /**
+     * @throws Throwable
+     */
+    public function __invoke(
+        {{ action }}{{ model }}Request $request,
+    ): ModelResponse
+    {
+
+        $result = $this->action->execute($request->payload());
+
+        return new ModelResponse(
+            new {{ model }}Resource($result),
+            Status::CREATED
+        );
+    }
+}

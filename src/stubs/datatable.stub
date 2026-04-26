@@ -1,0 +1,84 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\DataTables\Contracts\DatatableContract;
+use App\Modules\{{ module }}\Models\v1\{{ sub }};
+use Illuminate\Database\Eloquent\Builder;
+use Yajra\DataTables\DataTableAbstract;
+use Yajra\DataTables\Exceptions\Exception;
+use Yajra\DataTables\Html\Column;
+use Yajra\DataTables\Services\DataTable;
+
+class {{ class }} extends DataTableContract
+{
+
+    protected string $tableId = '{{ sub_lower }}-table';
+
+    protected string $file_name = '{{ sub }}List'
+    ;
+    /**
+     * Build DataTable class.
+     *
+     * @param mixed $query Results from query() method.
+     *
+     * @return DataTableAbstract
+     * @throws Exception
+     */
+    public function dataTable(mixed $query): DataTableAbstract
+    {
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn() // This generates the incremental number
+            ->rawColumns(['action'])
+            /*
+            ->editColumn('id', function ({{ sub }} $model) {
+                return $model->id;
+            })
+            */
+            ->editColumn('created_at', function ({{ sub }} $model) {
+                return $model->created_at->format(config('app.datetime_format'));
+            })
+            ->addColumn('action', function ({{ sub }} $model) {
+                return view('modules.{{ sub_lower }}.list._action-menu', compact('model'));
+            });
+    }
+
+    /**
+     * Get query source of dataTable.
+     *
+     * @param {{ sub }} $model
+     *
+     * @return Builder
+     */
+    public function query(): Builder
+    {
+        return {{ sub }}::query();
+    }
+
+    /**
+     * Get columns.
+     *
+     * @return array
+     */
+    protected function getColumns(): array
+    {
+        return [
+            Column::make('DT_RowIndex')
+                ->title('#')
+                ->addClass('dtr-control text-center')
+                ->searchable(false)
+                ->orderable(false),
+            Column::make('created_at')->title(__('Created At')),
+            // Add your other columns here, for example:
+            Column::computed('action')
+                ->orderable(false)
+                ->searchable(false)
+                ->exportable(false)
+                ->printable(false)
+                ->addClass('text-end')
+                ->width('100px')
+                ->responsivePriority(-1),
+        ];
+    }
+}
