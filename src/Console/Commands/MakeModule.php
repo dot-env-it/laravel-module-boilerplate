@@ -20,7 +20,7 @@ class MakeModule extends Command
         if (app()->isProduction()) {
             $this->error('This generator is strictly for local development!');
 
-            return 1;
+            return;
         }
 
         $name   = $this->argument('name');
