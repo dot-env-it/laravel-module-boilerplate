@@ -1,5 +1,10 @@
 # Laravel Module Boilerplate
 
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://banners.beyondco.de/Laravel%20Module%20Boilerplate.png?pattern=topography&style=style_2&fontSize=100px&md=1&showWatermark=1&theme=dark&packageManager=composer+require&packageName=dot-env-it%2Flaravel-module-boilerplate&description=A+streamlined+boilerplate+generator+for+modular+Laravel+architectures.&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg">
+    <img src="https://banners.beyondco.de/Laravel%20Module%20Boilerplate.png?pattern=topography&style=style_2&fontSize=100px&md=1&showWatermark=1&theme=light&packageManager=composer+require&packageName=dot-env-it%2Flaravel-module-boilerplate&description=A+streamlined+boilerplate+generator+for+modular+Laravel+architectures.&images=https%3A%2F%2Flaravel.com%2Fimg%2Flogomark.min.svg" alt="Laravel Module Boilerplate">
+</picture>
+
 [](https://www.google.com/search?q=https://github.com/dot-env-it/laravel-module-boilerplate)
 [](https://opensource.org/licenses/MIT)
 
